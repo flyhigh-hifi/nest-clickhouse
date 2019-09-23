@@ -1,13 +1,13 @@
-import { Client } from 'elasticsearch';
-import { ELASTICSEARCH_MODULE_OPTIONS } from './clickhouse.constants';
-import { ElasticsearchModuleOptions } from './interfaces';
+import { ClickHouse } from 'clickhouse';
+import { CLICKHOUSE_MODULE_OPTIONS } from './clickhouse.constants';
+import { ClickhouseModuleOptions } from './interfaces';
 
-export const ELASTICSEARCH_CLIENT = 'ELASTICSEARCH_CLIENT';
+export const CLICKHOUSE_CLIENT = 'CLICKHOUSE_CLIENT';
 
-export const createElasticsearchClient = () => ({
-  provide: ELASTICSEARCH_CLIENT,
-  useFactory: (options: ElasticsearchModuleOptions) => {
-    return new Client(options);
+export const createClickhouseClient = () => ({
+  provide: CLICKHOUSE_CLIENT,
+  useFactory: (options: ClickhouseModuleOptions) => {
+    return new ClickHouse(options);
   },
-  inject: [ELASTICSEARCH_MODULE_OPTIONS]
+  inject: [CLICKHOUSE_MODULE_OPTIONS]
 });
