@@ -26,105 +26,46 @@
 
 ## Description
 
-Elasticsearch module for [Nest](https://github.com/nestjs/nest) based on the official [elasticsearch](https://www.npmjs.com/package/elasticsearch) package.
+Clickhouse module for [Nest](https://github.com/nestjs/nest) based on the official [clickhouse](https://www.npmjs.com/package/clickhouse) package.
 
 ## Installation
 
 ```bash
-$ npm i --save @nestjs/elasticsearch elasticsearch @types/elasticsearch
+$ npm i --save @nestjs/clickhouse clickhouse
 ```
 
 ## Usage
 
-Import `ElasticsearchModule`:
+Import `ClickhouseModule`:
 
 ```typescript
 @Module({
-  imports: [ElasticsearchModule.register({
-    host: 'localhost:9200',
-    log: 'trace',
+  imports: [ClickhouseModule.register({
+    url: 'http://localhost',
+    port: 8123,
+    debug: false
   })],
   providers: [...],
 })
-export class SearchModule {}
+export class AnalyticsModule {}
 ```
 
-Inject `ElasticsearchService`:
+Inject `ClickhouseService`:
 
 ```typescript
 @Injectable()
-export class SearchService {
-  constructor(private readonly elasticsearchService: ElasticsearchService) {}
+export class AnalyticsService {
+  constructor(private readonly analyticsService: ClickhouseService) {}
 }
 ```
-
-
-## Async options
-
-Quite often you might want to asynchronously pass your module options instead of passing them beforehand. In such case, use `registerAsync()` method, that provides a couple of various ways to deal with async data.
-
-**1. Use factory**
-```typescript
-ElasticsearchModule.registerAsync({
-  useFactory: () => ({
-    host: 'localhost:9200',
-    log: 'trace',
-  }),
-})
-```
-Obviously, our factory behaves like every other one (might be `async` and is able to inject dependencies through `inject`).
-
-```typescript
-ElasticsearchModule.registerAsync({
-  imports: [ConfigModule],
-  useFactory: async (configService: ConfigService) => ({
-    host: configService.getString('ELASTICSEARCH_HOST'),
-    log: 'trace',
-  }),
-  inject: [ConfigService],
-}),
-```
-
-**2. Use class**
-```typescript
-ElasticsearchModule.registerAsync({
-  useClass: ElasticsearchConfigService,
-})
-```
-Above construction will instantiate `ElasticsearchConfigService` inside `ElasticsearchModule` and will leverage it to create options object.
-```typescript
-class ElasticsearchConfigService implements ElasticsearchOptionsFactory {
-  createElasticsearchOptions(): ElasticsearchModuleOptions {
-    return {
-      host: 'localhost:9200',
-      log: 'trace',
-    };
-  }
-}
-```
-
-**3. Use existing**
-```typescript
-ElasticsearchModule.registerAsync({
-  imports: [ConfigModule],
-  useExisting: ConfigService,
-}),
-```
-It works the same as `useClass` with one critical difference - `ElasticsearchModule` will lookup imported modules to reuse already created `ConfigService`, instead of instantiating it on its own.
 
 ## API Spec
 
-The `ElasticsearchService` exposes native [elasticsearch](https://www.npmjs.com/package/elasticsearch) methods and wraps them in the Observable, [read more](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/api-reference.html). The `ElasticsearchModule.register()` takes `options` object as an argument, [read more](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/client-configuration.html).
+The `ClickhouseService` exposes native [clickhouse](https://www.npmjs.com/package/clickhouse) methods and wraps them in the Observable.
 
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-* Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-* Website - [https://nestjs.com](https://nestjs.com/)
-* Twitter - [@nestframework](https://twitter.com/nestframework)
 
 ## License
 
