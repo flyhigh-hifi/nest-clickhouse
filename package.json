@@ -1,6 +1,6 @@
 {
   "name": "@flyhigh-hifi/clickhouse",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "description": "Nest - modern, fast, powerful node.js web framework (@clickhouse)",
   "author": "Mark Gubarev",
   "license": "MIT",

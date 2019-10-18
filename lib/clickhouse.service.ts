@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { bindNodeCallback, Observable } from 'rxjs';
+import { bindNodeCallback, Observable, of } from 'rxjs';
 import { CLICKHOUSE_CLIENT } from './clickhouse-client.provider';
-import { ClickHouse, QueryCursor } from 'clickhouse';
+import { ClickHouse, QueryCursor, WriteStream } from 'clickhouse';
+import { Stream } from 'stream';
 
 @Injectable()
 export class ClickhouseService {
@@ -13,19 +14,23 @@ export class ClickhouseService {
     return this.clickhouseClient;
   }
 
-  query<T = any>(query: String, reqParams?: object): Observable<QueryCursor> {
-    return (bindNodeCallback(
-      this.bindClientContext(this.clickhouseClient.query)
-    )(query, reqParams) as any) as Observable<QueryCursor>;
+  query<T = any>(
+    query: String,
+    reqParams?: object
+  ): Observable<string | Buffer> {
+    return new Observable<string | Buffer>(subscriber => {
+      this.clickhouseClient
+        .query(query, reqParams)
+        .stream()
+        .on('data', row => subscriber.next(row))
+        .on('error', err => subscriber.error(err))
+        .on('end', () => subscriber.complete());
+    });
   }
 
-  insert<T = any>(query: String, data?: object): Observable<QueryCursor> {
-    return (bindNodeCallback(
-      this.bindClientContext(this.clickhouseClient.query)
-    )(query, data) as any) as Observable<QueryCursor>;
-  }
-
-  bindClientContext<T extends Function>(fn: T): T {
-    return fn.bind(this.clickhouseClient);
+  insert<T = any>(query: String, data?: object): Observable<WriteStream> {
+    return of(this.clickhouseClient
+      .insert(query, data)
+      .stream() as WriteStream);
   }
 }
