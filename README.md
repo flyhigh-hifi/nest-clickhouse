@@ -2,71 +2,267 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
+<h1 align="center">NestJS ClickHouse</h1>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
+<p align="center">
+  <a href="https://www.npmjs.com/package/@flyhigh-hifi/nest-clickhouse"><img src="https://img.shields.io/npm/v/@flyhigh-hifi/nest-clickhouse.svg" alt="NPM Version" /></a>
+  <a href="https://www.npmjs.com/package/@flyhigh-hifi/nest-clickhouse"><img src="https://img.shields.io/npm/l/@flyhigh-hifi/nest-clickhouse.svg" alt="Package License" /></a>
+  <a href="https://www.npmjs.com/package/@flyhigh-hifi/nest-clickhouse"><img src="https://img.shields.io/npm/dm/@flyhigh-hifi/nest-clickhouse.svg" alt="NPM Downloads" /></a>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
-Clickhouse module for [Nest](https://github.com/nestjs/nest) based on the official [clickhouse](https://www.npmjs.com/package/clickhouse) package.
+Modern ClickHouse module for [NestJS](https://nestjs.com/) based on the official [@clickhouse/client](https://www.npmjs.com/package/@clickhouse/client) package.
+
+## Features
+
+- ✅ **Modern API** - Uses the official `@clickhouse/client` with async/await support
+- ✅ **TypeScript** - Full TypeScript support with proper typings
+- ✅ **NestJS 10** - Compatible with latest NestJS versions (9.x and 10.x)
+- ✅ **Async Configuration** - Support for `useFactory`, `useClass`, and `useExisting`
+- ✅ **Observable Support** - All methods available in both Promise and Observable variants
+- ✅ **Automatic Cleanup** - Proper connection cleanup on module destroy
 
 ## Installation
 
 ```bash
-$ npm i --save @nestjs/clickhouse clickhouse
+npm install @flyhigh-hifi/nest-clickhouse @clickhouse/client
 ```
 
-## Usage
+## Quick Start
 
-Import `ClickhouseModule`:
+### 1. Import the Module
+
+**Synchronous configuration:**
 
 ```typescript
+import { Module } from '@nestjs/common';
+import { ClickhouseModule } from '@flyhigh-hifi/nest-clickhouse';
+
 @Module({
-  imports: [ClickhouseModule.register({
-    url: 'http://localhost',
-    port: 8123,
-    debug: false
-  })],
-  providers: [...],
+  imports: [
+    ClickhouseModule.register({
+      host: 'http://localhost:8123',
+      database: 'default',
+      username: 'default',
+      password: '',
+    }),
+  ],
 })
-export class AnalyticsModule {}
+export class AppModule {}
 ```
 
-Inject `ClickhouseService`:
+**Asynchronous configuration:**
 
 ```typescript
+import { Module } from '@nestjs/common';
+import { ClickhouseModule } from '@flyhigh-hifi/nest-clickhouse';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+@Module({
+  imports: [
+    ClickhouseModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        host: configService.get('CLICKHOUSE_HOST'),
+        database: configService.get('CLICKHOUSE_DATABASE'),
+        username: configService.get('CLICKHOUSE_USERNAME'),
+        password: configService.get('CLICKHOUSE_PASSWORD'),
+      }),
+      inject: [ConfigService],
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### 2. Use the Service
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { ClickhouseService } from '@flyhigh-hifi/nest-clickhouse';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  created_at: string;
+}
+
 @Injectable()
-export class AnalyticsService {
-  constructor(private readonly analyticsService: ClickhouseService) {}
+export class UsersService {
+  constructor(private readonly clickhouse: ClickhouseService) {}
+
+  async getUsers(): Promise<User[]> {
+    const result = await this.clickhouse.query<User>({
+      query: 'SELECT * FROM users WHERE id > {id:UInt32}',
+      query_params: { id: 100 },
+      format: 'JSONEachRow',
+    });
+
+    return await result.json();
+  }
+
+  async createUser(user: Omit<User, 'id'>): Promise<void> {
+    await this.clickhouse.insert({
+      table: 'users',
+      values: [user],
+      format: 'JSONEachRow',
+    });
+  }
+
+  async createTable(): Promise<void> {
+    await this.clickhouse.command({
+      query: `
+        CREATE TABLE IF NOT EXISTS users (
+          id UInt32,
+          name String,
+          email String,
+          created_at DateTime
+        ) ENGINE = MergeTree()
+        ORDER BY id
+      `,
+    });
+  }
 }
 ```
 
-## API Spec
+## API Reference
 
-The `ClickhouseService` exposes native [clickhouse](https://www.npmjs.com/package/clickhouse) methods and wraps them in the Observable.
+### Query Methods
+
+#### `query<T>(params): Promise<QueryResult<T>>`
+Execute a SELECT query and return the result.
+
+```typescript
+const result = await clickhouse.query({
+  query: 'SELECT * FROM users LIMIT 10',
+  format: 'JSONEachRow',
+});
+const data = await result.json();
+```
+
+#### `query$<T>(params): Observable<QueryResult<T>>`
+Observable variant of `query()`.
+
+#### `queryStream<T>(params): Promise<T[]>`
+Execute a query and return results as an array.
+
+```typescript
+const users = await clickhouse.queryStream<User>({
+  query: 'SELECT * FROM users',
+  format: 'JSONEachRow',
+});
+```
+
+### Insert Methods
+
+#### `insert<T>(params): Promise<InsertResult>`
+Insert data into a table.
+
+```typescript
+await clickhouse.insert({
+  table: 'users',
+  values: [
+    { id: 1, name: 'John', email: 'john@example.com' },
+    { id: 2, name: 'Jane', email: 'jane@example.com' },
+  ],
+  format: 'JSONEachRow',
+});
+```
+
+#### `insert$<T>(params): Observable<InsertResult>`
+Observable variant of `insert()`.
+
+### Command Methods
+
+#### `command(params): Promise<CommandResult>`
+Execute a command (CREATE, ALTER, DROP, etc.).
+
+```typescript
+await clickhouse.command({
+  query: 'CREATE TABLE test (id UInt32) ENGINE = Memory',
+});
+```
+
+#### `command$(params): Observable<CommandResult>`
+Observable variant of `command()`.
+
+### Execution Methods
+
+#### `exec(params): Promise<ExecResult>`
+Execute any statement (DDL, DML).
+
+```typescript
+await clickhouse.exec({
+  query: 'INSERT INTO users VALUES (1, "John", "john@example.com", now())',
+});
+```
+
+#### `exec$(params): Observable<ExecResult>`
+Observable variant of `exec()`.
+
+### Utility Methods
+
+#### `ping(): Promise<boolean>`
+Check connection to ClickHouse server.
+
+```typescript
+const isConnected = await clickhouse.ping();
+```
+
+#### `ping$(): Observable<boolean>`
+Observable variant of `ping()`.
+
+#### `getClient(): ClickHouseClient`
+Get the underlying ClickHouse client instance for advanced usage.
+
+```typescript
+const client = clickhouse.getClient();
+```
+
+## Configuration Options
+
+The module accepts all configuration options from [@clickhouse/client](https://clickhouse.com/docs/en/integrations/language-clients/javascript). Common options:
+
+```typescript
+{
+  host?: string;                    // default: 'http://localhost:8123'
+  database?: string;                // default: 'default'
+  username?: string;                // default: 'default'
+  password?: string;                // default: ''
+  application?: string;             // application name
+  clickhouse_settings?: {           // ClickHouse settings
+    async_insert?: 0 | 1;
+    wait_for_async_insert?: 0 | 1;
+    // ... other settings
+  };
+  request_timeout?: number;         // request timeout in ms
+  max_open_connections?: number;    // connection pool size
+  compression?: {                   // compression settings
+    request?: boolean;
+    response?: boolean;
+  };
+}
+```
+
+## Testing
+
+```bash
+# Unit tests
+npm run test
+
+# Test coverage
+npm run test:cov
+
+# Watch mode
+npm run test:watch
+```
 
 ## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+This is an MIT-licensed open source project. Issues and pull requests are welcome!
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+[MIT](LICENSE)

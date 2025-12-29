@@ -1,6 +1,5 @@
 # dependencies
 /node_modules
-package-lock.json
 
 # IDE
 /.idea
@@ -16,5 +15,6 @@ npm-debug.log
 /coverage
 /.nyc_output
 
-# source
+# build
 dist
+*.tsbuildinfo
