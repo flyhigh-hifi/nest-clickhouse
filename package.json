@@ -25,6 +25,7 @@
     "format": "prettier --write \"lib/**/*.ts\"",
     "format:check": "prettier --check \"lib/**/*.ts\"",
     "lint": "eslint \"lib/**/*.ts\" --fix",
+    "lint:check": "eslint \"lib/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
