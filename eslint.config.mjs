@@ -3,6 +3,7 @@ import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
 import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
+import globals from 'globals';
 
 export default [
   eslint.configs.recommended,
@@ -11,13 +12,12 @@ export default [
     languageOptions: {
       parser: tsparser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: './tsconfig.eslint.json',
         tsconfigRootDir: import.meta.dirname,
         sourceType: 'module',
       },
       globals: {
-        node: true,
-        jest: true,
+        ...globals.node,
       },
     },
     plugins: {
@@ -36,6 +36,14 @@ export default [
         { argsIgnorePattern: '^_' },
       ],
       'prettier/prettier': 'error',
+    },
+  },
+  {
+    files: ['**/*.spec.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
     },
   },
   {
