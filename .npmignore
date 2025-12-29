@@ -1,7 +1,27 @@
-# source
-lib
-index.ts
-package-lock.json
-tslint.json
+# Source files
+lib/
+test/
+
+# Config files
 tsconfig.json
+eslint.config.mjs
 .prettierrc
+.husky/
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+
+# IDE
+.vscode/
+.idea/
+
+# Misc
+*.log
+*.tgz
+node_modules/
+coverage/
+.DS_Store

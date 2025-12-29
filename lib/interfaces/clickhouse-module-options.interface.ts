@@ -1,11 +1,15 @@
-interface ConfigOptions {
-  url: String;
-  port: number;
-  debug?: boolean;
-  basicAuth?: object;
-  isUseGzip?: boolean;
-  config?: object;
-  reqParams?: object;
+import { ModuleMetadata, Type } from '@nestjs/common';
+import { ClickHouseClientConfigOptions } from '@clickhouse/client';
+
+export type ClickhouseModuleOptions = ClickHouseClientConfigOptions;
+
+export interface ClickhouseOptionsFactory {
+  createClickhouseOptions(): Promise<ClickhouseModuleOptions> | ClickhouseModuleOptions;
 }
 
-export interface ClickhouseModuleOptions extends ConfigOptions {}
+export interface ClickhouseModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
+  useExisting?: Type<ClickhouseOptionsFactory>;
+  useClass?: Type<ClickhouseOptionsFactory>;
+  useFactory?: (...args: any[]) => Promise<ClickhouseModuleOptions> | ClickhouseModuleOptions;
+  inject?: any[];
+}
